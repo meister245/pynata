@@ -1,0 +1,9 @@
+.pytest_cache/
+.idea/
+
+*.egg-info/
+build/
+dist/
+
+*.pyc
+*.iml
