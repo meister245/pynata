@@ -1,0 +1,36 @@
+image: python:3-slim
+
+stages:
+  - test
+  - build
+  - dist
+
+cache:
+  paths:
+    - dist/
+
+before_script:
+  - python -V
+
+test_python:
+  stage: test
+  script:
+    - pip install -r requirements.txt
+    - py.test tests/
+
+build_release:
+  stage: build
+  script:
+    - rm -rf dist/
+    - python setup.py check sdist
+    - ls -la dist/
+  except:
+    - development
+
+dist_pypi:
+  stage: dist
+  script:
+    - pip install twine
+    - python -m twine upload -u ${PYPI_USER} -p ${PYPI_PASSWORD} dist/*.tar.gz
+  only:
+    - master
