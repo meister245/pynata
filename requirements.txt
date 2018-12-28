@@ -1,1 +1,3 @@
-pytest[dev]
+pytest[test]
+pytest-mock[test]
+requests[web]

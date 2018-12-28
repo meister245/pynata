@@ -9,7 +9,9 @@ with open('README.md', 'r') as f:
 with open('pynata/__init__.py', 'r') as f:
     version = re.search(r'(?<=__version__\s=\s\')(?:\d+\.\d+\.\d+)', f.read()).group(0)
 
-extras_require = {}
+extras_require = {
+    'web': ['requests']
+}
 
 project_urls = {
     'Changelog': 'https://gitlab.com/meister245/pynata/wikis/Changelog',
