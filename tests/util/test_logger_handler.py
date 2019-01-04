@@ -14,7 +14,7 @@ import logging.handlers
 
 import pytest
 
-from pynata.logger import LoggerUtil, LoggerHandlerUtil
+from pynata.util.logger import LoggerUtil, LoggerHandlerUtil
 
 
 @pytest.fixture(scope='class')

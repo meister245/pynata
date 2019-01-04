@@ -13,7 +13,7 @@ import logging
 
 import pytest
 
-from pynata.logger import _LoggerCommon
+from pynata.util.logger import _LoggerCommon
 
 
 @pytest.fixture(scope='class')
