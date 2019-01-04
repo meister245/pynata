@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import re
-from setuptools import setup
+from setuptools import setup, find_namespace_packages
 
 with open('README.md', 'r') as f:
     long_description = f.read()
@@ -31,6 +31,7 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     project_urls=project_urls,
+    packages=['pynata', 'pynata.template', 'pynata.util'],
     python_requires='>=3.5.2',
     keywords='pynata utility logging',
     extras_require=extras_require,

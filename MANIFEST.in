@@ -1,3 +1,6 @@
 include LICENSE
-recursive-include pynata *.py
-prune examples/docker/build/dist/tests
+
+global-exclude *.pyc
+
+graft pynata
+prune tests
