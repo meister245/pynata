@@ -1,17 +1,13 @@
 #!/usr/bin/env python3
 
 import re
-from setuptools import setup, find_namespace_packages
+from setuptools import setup
 
 with open('README.md', 'r') as f:
     long_description = f.read()
 
 with open('pynata/__init__.py', 'r') as f:
     version = re.search(r'(?<=__version__\s=\s\')(?:\d+\.\d+\.\d+)', f.read()).group(0)
-
-extras_require = {
-    'web': ['requests']
-}
 
 project_urls = {
     'Changelog': 'https://gitlab.com/meister245/pynata/wikis/Changelog',
@@ -31,10 +27,9 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     project_urls=project_urls,
-    packages=['pynata', 'pynata.template', 'pynata.util'],
+    packages=['pynata', 'pynata.logger'],
     python_requires='>=3.5.2',
     keywords='pynata utility logging',
-    extras_require=extras_require,
     classifiers=[
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)',
