@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
 """
-tests.test_logger_handler
+tests.logger.test_handler
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 Unittests for LoggerHandlerUtil class
 
-:copyright: © 2018 Zsolt Mester
+:copyright: © 2019 Zsolt Mester
 :license: MPL 2.0, see LICENSE for more details
 """
 
@@ -14,7 +14,8 @@ import logging.handlers
 
 import pytest
 
-from pynata.util.logger import LoggerUtil, LoggerHandlerUtil
+from pynata.logger.logger import LoggerUtil
+from pynata.logger.handler import LoggerHandlerUtil
 
 
 @pytest.fixture(scope='class')

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
 """
-tests.test_logger
-~~~~~~~~~~~~~~~~~
+tests.logger.test_logger
+~~~~~~~~~~~~~~~~~~~~~~~~
 Unittests for LoggerUtil class
 
-:copyright: © 2018 Zsolt Mester
+:copyright: © 2019 Zsolt Mester
 :license: MPL 2.0, see LICENSE for more details
 """
 
@@ -13,7 +13,7 @@ import logging
 
 import pytest
 
-from pynata.util.logger import LoggerUtil
+from pynata.logger.logger import LoggerUtil
 
 
 @pytest.fixture(scope='class')
@@ -36,13 +36,13 @@ class TestGetLogger:
 class TestSetLogFormat:
     def test_get_logger_name(self, log_util):
         log_util.set_log_format('sample')
-        assert log_util._log_format == 'sample'
+        assert log_util.log_format == 'sample'
 
 
 class TestSetLogDateFormat:
     def test_get_logger_name(self, log_util):
         log_util.set_log_date_format('sample')
-        assert log_util._log_date_format == 'sample'
+        assert log_util.log_date_format == 'sample'
 
 
 @pytest.mark.usefixtures('reset_logger')
@@ -101,10 +101,10 @@ class TestSetupLogger:
 class TestRemoveLogger:
     def test_remove_logger(self, log_util):
         log_util.setup_logger(__name__)
-        assert log_util._logger_exists(__name__)
+        assert log_util.is_logger_exists(__name__)
 
         log_util.remove_logger(__name__)
-        assert log_util._logger_exists(__name__) is False
+        assert log_util.is_logger_exists(__name__) is False
 
 
 @pytest.mark.usefixtures('reset_logger')
@@ -113,13 +113,13 @@ class TestRemoveLoggers:
         log_util.setup_logger('logger1')
         log_util.setup_logger('logger2')
 
-        assert log_util._logger_exists('logger1')
-        assert log_util._logger_exists('logger2')
+        assert log_util.is_logger_exists('logger1')
+        assert log_util.is_logger_exists('logger2')
 
         log_util.remove_loggers()
 
-        assert log_util._logger_exists('logger1') is False
-        assert log_util._logger_exists('logger2') is False
+        assert log_util.is_logger_exists('logger1') is False
+        assert log_util.is_logger_exists('logger2') is False
 
 
 @pytest.mark.usefixtures('reset_logger')
