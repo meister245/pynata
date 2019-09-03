@@ -53,21 +53,13 @@ class LoggerCommon:
         return True if name in logging.Logger.manager.loggerDict.keys() else False
 
     @classmethod
-    def set_log_format(cls, format: str) -> None:
+    def set_log_format(cls, format_str: str) -> None:
         """Sets the log record format that will be used with logging.Formatter instances"""
 
-        if isinstance(format, str):
-            cls.log_format = format
-
-        else:
-            raise ValueError('invalid type for log format string - {}'.format(format))
+        cls.log_format = format_str
 
     @classmethod
     def set_log_date_format(cls, format_str: str) -> None:
         """Sets the log date record format that will be used with logging.Formatter instances"""
 
-        if isinstance(format_str, str):
-            cls.log_date_format = format_str
-
-        else:
-            raise ValueError('invalid type for log date format string - {}'.format(format_str))
+        cls.log_date_format = format_str

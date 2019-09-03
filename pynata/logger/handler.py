@@ -17,6 +17,16 @@ from .common import LoggerCommon
 
 
 class LoggerHandlerUtil(LoggerCommon):
+    handler_mapping = {
+        'stream': logging.StreamHandler, 'file': logging.FileHandler, 'null': logging.NullHandler,
+        'watchedfile': logging.handlers.WatchedFileHandler, 'rotatingfile': logging.handlers.RotatingFileHandler,
+        'timedrotatingfile': logging.handlers.TimedRotatingFileHandler, 'socket': logging.handlers.SocketHandler,
+        'datagram': logging.handlers.DatagramHandler, 'syslog': logging.handlers.SysLogHandler,
+        'nteventlog': logging.handlers.NTEventLogHandler, 'smtp': logging.handlers.SMTPHandler,
+        'memory': logging.handlers.MemoryHandler, 'http': logging.handlers.HTTPHandler,
+        'queue': logging.handlers.QueueHandler
+    }
+
     def __init__(self):
         LoggerCommon.__init__(self)
 
@@ -61,7 +71,8 @@ class LoggerHandlerUtil(LoggerCommon):
 
         return handlers
 
-    def add_handler(self, logger: logging.Logger, handlers: Union[List[logging.Handler], logging.Handler],
+    @classmethod
+    def add_handler(cls, logger: logging.Logger, handlers: Union[List[logging.Handler], logging.Handler],
                     reset_handler: bool = True) -> None:
         """
         Adds handler(s) to logging.Logger instance
@@ -75,31 +86,18 @@ class LoggerHandlerUtil(LoggerCommon):
         for h in handlers:
             if reset_handler:
                 for x in [x for x in logger.handlers if type(x) == type(h)]:
-                    self.remove_handler(logger, x)
+                    cls.remove_handler(logger, x)
 
             logger.addHandler(h)
 
-    @staticmethod
-    def get_handler(handler_type: str, **kwargs) -> logging.Handler:
+    @classmethod
+    def get_handler(cls, handler_type: str, **kwargs) -> logging.Handler:
         """logging.Handler factory method, returns a handler instance"""
 
-        mapping = {
-            'stream': logging.StreamHandler, 'file': logging.FileHandler, 'null': logging.NullHandler,
-            'watchedfile': logging.handlers.WatchedFileHandler, 'rotatingfile': logging.handlers.RotatingFileHandler,
-            'timedrotatingfile': logging.handlers.TimedRotatingFileHandler, 'socket': logging.handlers.SocketHandler,
-            'datagram': logging.handlers.DatagramHandler, 'syslog': logging.handlers.SysLogHandler,
-            'nteventlog': logging.handlers.NTEventLogHandler, 'smtp': logging.handlers.SMTPHandler,
-            'memory': logging.handlers.MemoryHandler, 'http': logging.handlers.HTTPHandler,
-            'queue': logging.handlers.QueueHandler
-        }
+        if isinstance(handler_type, str) and handler_type in cls.handler_mapping.keys():
+            return cls.handler_mapping[handler_type](**kwargs)
 
-        if isinstance(handler_type, str) and handler_type in mapping.keys():
-            if handler_type in mapping.keys():
-                return mapping[handler_type](**kwargs)
-            else:
-                raise ValueError('unknown handler class - {}'.format(handler_type))
-        else:
-            raise ValueError('invalid type for handler_type - {}'.format(handler_type))
+        raise ValueError('invalid type for handler_type - {}'.format(handler_type))
 
     @staticmethod
     def remove_handler(logger: logging.Logger, handler: logging.Handler) -> None:
@@ -111,5 +109,4 @@ class LoggerHandlerUtil(LoggerCommon):
     def set_handler_log_level(self, handler: logging.Handler, log_level: Union[str, int, bool]) -> None:
         """Set handler logging level"""
 
-        log_level = self.get_logging_level(log_level)
-        handler.setLevel(log_level)
+        handler.setLevel(self.get_logging_level(log_level))

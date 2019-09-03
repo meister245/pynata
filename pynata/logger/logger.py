@@ -18,18 +18,10 @@ from .handler import LoggerHandlerUtil
 
 
 class LoggerUtil(LoggerCommon):
-    def __init__(self, **kwargs):
-        """
-        :param str log_format: format string for logging records
-        :param str log_date_format: date format string for logging records
-        """
+    handler = LoggerHandlerUtil()
 
+    def __init__(self):
         LoggerCommon.__init__(self)
-
-        self.set_log_date_format(kwargs.get('log_date_format', '%Y-%m-%d %H:%M:%S'))
-        self.set_log_format(kwargs.get('log_format', '%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-
-        self.handler = LoggerHandlerUtil()
 
     def setup_logger(self, logger_name: str, logger_level: Union[str, int, bool] = 'notset',
                      handler_config: Union[dict, None] = None, remove_handlers: bool = True,
