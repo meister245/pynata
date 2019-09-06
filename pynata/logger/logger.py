@@ -20,32 +20,29 @@ from .handler import LoggerHandlerUtil
 class LoggerUtil(LoggerCommon):
     handler = LoggerHandlerUtil()
 
-    def __init__(self):
-        LoggerCommon.__init__(self)
-
-    def setup_logger(self, logger_name: str, logger_level: Union[str, int, bool] = 'notset',
-                     handler_config: Union[dict, None] = None, remove_handlers: bool = True,
-                     reset_handler_type: bool = True) -> logging.Logger:
+    def setup_logger(self, logger_name: str, logger_level: Union[str, int, bool] = None,
+                     handler_config: Union[dict, bool, None] = None, **kwargs) -> logging.Logger:
         """
         Return a configured logging.Logger instance with logging handlers
 
         :param str logger_name: Logger object name
         :param str|int|bool logger_level: Logger object effective logging level - defaults to NOTSET
         :param dict handler_config: logging handlers to be created and added to the Logger - defaults to NullHandler
-        :param bool remove_handlers: remove any existing handler on Logger object - defaults to True
-        :param bool reset_handler_type: override existing handler type on Logger object - defaults to True
-        """
 
+        :param bool remove_handlers: remove any existing handler on Logger object - defaults to True
+        :param bool reset_handler_type: override existing handler type on Logger object - defaults to False
+
+        """
         logger = self.get_logger(logger_name)
 
-        if self.get_logging_level(logger_level) != 0:
-            self.set_logger_level(logger, logger_level)
+        if isinstance(logger_level, (str, int, bool)):
+            self.set_logger_level(logger, self.get_logging_level(logger_level))
 
-        if remove_handlers:
+        if kwargs.get('remove_handlers', True):
             self.remove_logger_handlers(logger)
 
         for h in self.handler.setup_handlers(handler_config):
-            self.handler.add_handler(logger, h, reset_handler_type)
+            self.handler.add_handler(logger, h, kwargs.get('reset_handler_type', False))
 
         return logger
 
@@ -67,8 +64,8 @@ class LoggerUtil(LoggerCommon):
         """
         Deletes logging.Logger instance if found in logging.Logger.manager.loggerDict
         Removes and closes all handlers present on logging.Logger instance
-        """
 
+        """
         if self.is_logger_exists(logger_name):
             self.remove_logger_handlers(logging.Logger.manager.loggerDict[logger_name])
             logging.Logger.manager.loggerDict.pop(logger_name)
@@ -77,8 +74,8 @@ class LoggerUtil(LoggerCommon):
         """
         Deletes all logging.Logger instances found in logging.Logger.manager.loggerDict
         Removes and closes all handlers present on logging.Logger instances
-        """
 
+        """
         loggers = []
 
         for k, v in logging.Logger.manager.loggerDict.items():
