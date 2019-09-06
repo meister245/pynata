@@ -31,7 +31,7 @@ class LoggerCommon:
         return logging.Formatter(cls.log_format, cls.log_date_format)
 
     @staticmethod
-    def get_logging_level(log_level: Union[str, int, bool]) -> int:
+    def get_logging_level(log_level: Union[str, int, bool, type(None)]) -> int:
         """Return an integer for logging level configuration"""
 
         if isinstance(log_level, str) and isinstance(getattr(logging, log_level.upper(), 'invalid'), int):
@@ -42,6 +42,9 @@ class LoggerCommon:
 
         elif isinstance(log_level, int) and log_level in [0, 10, 20, 30, 40, 50]:
             return log_level
+
+        elif log_level is None:
+            return 0
 
         else:
             raise ValueError('invalid logging level - {}'.format(log_level))

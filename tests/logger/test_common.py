@@ -24,6 +24,7 @@ def log_common():
 class TestGetLoggingLevel:
     def test_get_logging_level(self, log_common):
         assert log_common.get_logging_level(30) == 30
+        assert log_common.get_logging_level(None) == 0
         assert log_common.get_logging_level(True) == 10
         assert log_common.get_logging_level(False) == 30
         assert log_common.get_logging_level('warning') == 30
@@ -33,9 +34,6 @@ class TestGetLoggingLevel:
 
         with pytest.raises(ValueError):
             log_common.get_logging_level('invalid')
-
-        with pytest.raises(ValueError):
-            log_common.get_logging_level(None)
 
 
 class TestLoggerExists:
