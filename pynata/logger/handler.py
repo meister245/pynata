@@ -27,10 +27,7 @@ class LoggerHandlerUtil(LoggerCommon):
         'queue': logging.handlers.QueueHandler
     }
 
-    def __init__(self):
-        LoggerCommon.__init__(self)
-
-    def setup_handlers(self, config: Union[dict, None] = None) -> List[Union[logging.Handler, logging.NullHandler]]:
+    def setup_handlers(self, config: Union[dict, bool]) -> List[Union[logging.Handler, logging.NullHandler]]:
         """
         Returns a list of logging handler instances
         If no configuration is provided, a logging.NullHandler is returned
@@ -48,38 +45,43 @@ class LoggerHandlerUtil(LoggerCommon):
                 "file": {"filename": "/var/tmp/logfile", "log_level": "warning"},
                 "rotatingfile": {"filename": "/var/tmp/logfile"}
             }
-        """
 
+        """
         handlers = []
 
-        if config is None:
-            handlers.append(logging.NullHandler())
+        if not isinstance(config, (dict, bool)):
+            return handlers
 
-        elif isinstance(config, dict):
-            for handler_type, handler_kwargs in config.items():
-                c_kwargs = handler_kwargs.copy()
-                log_level = c_kwargs.pop('log_level', 'warn')
-                handler = self.get_handler(handler_type, **c_kwargs)
+        elif isinstance(config, bool):
+            config = {'stream': [{'log_level': 'debug' if config else 'warning'}]}
+
+        for handler_type, handler_configs in config.items():
+            if isinstance(handler_configs, dict):
+                handler_configs = [handler_configs]
+
+            elif isinstance(handler_configs, (list, tuple)):
+                handler_configs = [{}] if len(handler_configs) == 0 else handler_configs
+
+            for config in tuple(handler_configs):
+                log_level = config.pop('log_level', 'notset')
+                handler = self.get_handler(handler_type, **config)
 
                 self.set_handler_log_level(handler, log_level)
                 handler.setFormatter(self.get_formatter())
 
                 handlers.append(handler)
 
-        else:
-            raise ValueError('invalid type for config')
-
         return handlers
 
     @classmethod
     def add_handler(cls, logger: logging.Logger, handlers: Union[List[logging.Handler], logging.Handler],
-                    reset_handler: bool = True) -> None:
+                    reset_handler: bool = False) -> None:
         """
         Adds handler(s) to logging.Logger instance
 
         :param reset_handler: close existing Handler instance of the same class type on Logger instance
-        """
 
+        """
         if not isinstance(handlers, list):
             handlers = [handlers]
 
