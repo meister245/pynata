@@ -12,25 +12,28 @@ cache:
 before_script:
   - python -V
 
-test_python:
+job_test:
   stage: test
   script:
     - pip install -r requirements.txt
     - py.test tests/
 
-build_release:
+job_build:
   stage: build
   script:
     - rm -rf dist/
     - python setup.py check sdist
     - ls -la dist/
-  except:
-    - development
+  only:
+    refs:
+      - master
+      - staging
 
-dist_pypi:
+job_dist:
   stage: dist
   script:
     - pip install twine
     - python -m twine upload -u ${PYPI_USER} -p ${PYPI_PASSWORD} dist/*.tar.gz
   only:
-    - master
+    refs:
+      - master
