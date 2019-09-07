@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
 """
-tests.test_logger_handler
+tests.logger.test_handler
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 Unittests for LoggerHandlerUtil class
 
-:copyright: © 2018 Zsolt Mester
+:copyright: © 2019 Zsolt Mester
 :license: MPL 2.0, see LICENSE for more details
 """
 
@@ -14,7 +14,8 @@ import logging.handlers
 
 import pytest
 
-from pynata.util.logger import LoggerUtil, LoggerHandlerUtil
+from pynata.logger.logger import LoggerUtil
+from pynata.logger.handler import LoggerHandlerUtil
 
 
 @pytest.fixture(scope='class')
@@ -36,30 +37,29 @@ def reset_logger(log_util):
 class TestAddHandler:
     def test_add_handler(self, log_handler_util):
         logger = logging.getLogger(__name__)
+
         assert len(logger.handlers) == 0
 
         handler = logging.StreamHandler()
         log_handler_util.add_handler(logger, handler)
-        assert len(logger.handlers) == 1
-        assert logger.handlers.pop() == handler
+
+        assert logger.handlers == [handler]
 
     def test_add_handler_list(self, log_handler_util):
         logger = logging.getLogger(__name__)
+
         assert len(logger.handlers) == 0
 
         handlers = [logging.StreamHandler(), logging.handlers.SysLogHandler()]
         log_handler_util.add_handler(logger, handlers)
-        assert len(logger.handlers) == 2
 
-        for x in handlers:
-            assert x in logger.handlers
+        assert logger.handlers == handlers
 
     def test_add_handler_reset_handler(self, log_handler_util):
         logger = logging.getLogger(__name__)
 
-        h1 = logging.StreamHandler()
-        h2 = logging.StreamHandler()
-        log_handler_util.add_handler(logger, [h1, h2])
+        h1, h2 = logging.StreamHandler(), logging.StreamHandler()
+        log_handler_util.add_handler(logger, [h1, h2], reset_handler=True)
 
         assert len(logger.handlers) == 1
         assert logger.handlers.pop() == h2
@@ -67,13 +67,10 @@ class TestAddHandler:
     def test_add_handler_no_reset_handler(self, log_handler_util):
         logger = logging.getLogger(__name__)
 
-        handlers = [logging.StreamHandler(), logging.handlers.SysLogHandler()]
-        log_handler_util.add_handler(logger, handlers, reset_handler=False)
+        h1, h2 = logging.StreamHandler(), logging.StreamHandler()
+        log_handler_util.add_handler(logger, [h1, h2], reset_handler=False)
 
-        assert len(logger.handlers) == 2
-
-        for x in handlers:
-            assert x in logger.handlers
+        assert logger.handlers == [h1, h2]
 
 
 class TestGetHandler:
@@ -105,56 +102,59 @@ class TestSetHandlerLevel:
     def test_set_handler_level(self, log_handler_util):
         handler = logging.StreamHandler()
 
+        assert handler.level == 0
+
         log_handler_util.set_handler_log_level(handler, 50)
+
         assert handler.level == 50
 
 
 class TestSetupHandlers:
-    def test_setup_handlers_default(self, log_handler_util):
-        handlers = log_handler_util.setup_handlers()
-        assert len(handlers) == 1
-        assert isinstance(handlers.pop(), logging.NullHandler)
+    def test_setup_handlers_config_empty(self, log_handler_util):
+        handlers_a = log_handler_util.setup_handlers({'stream': {}})
+        handlers_b = log_handler_util.setup_handlers({'stream': []})
+        handlers_c = log_handler_util.setup_handlers({'stream': ()})
 
-    def test_setup_handlers_basic_config(self, log_handler_util):
-        handlers = log_handler_util.setup_handlers(config={'stream': {}})
+        assert len(handlers_a) == len(handlers_b) == len(handlers_c) == 1
 
-        assert len(handlers) == 1
+        h_a, h_b, h_c = handlers_a.pop(), handlers_b.pop(), handlers_c.pop()
 
-        h = handlers.pop()
+        assert h_a.level == h_b.level == h_c.level == 0
 
-        assert isinstance(h, logging.StreamHandler)
-        assert h.level == 30
+    def test_setup_handlers_config_iterable(self, log_handler_util):
+        handlers_a = log_handler_util.setup_handlers({'stream': [{'log_level': 'debug'}, {'log_level': 'info'}]})
+        handlers_b = log_handler_util.setup_handlers({'stream': ({'log_level': 'debug'}, {'log_level': 'info'})})
 
-    def test_setup_handlers_custom_config(self, log_handler_util, tmpdir):
-        config = {
-            'syslog': {'log_level': 20},
-            'stream': {'log_level': False},
-            'file': {'log_level': 'critical', 'filename': tmpdir.join('temp_file')}
-        }
+        assert len(handlers_a) == len(handlers_b) == 2
 
-        handlers = log_handler_util.setup_handlers(config)
-        assert len(handlers) == 3
+        h1a, h2a = handlers_a
+        h1b, h2b = handlers_b
 
-        h = [x for x in handlers if type(x) == logging.handlers.SysLogHandler].pop()
-        assert h.level == 20
+        assert h1a.level == h1b.level == 10
+        assert h2a.level == h2b.level == 20
 
-        h = [x for x in handlers if type(x) == logging.StreamHandler].pop()
-        assert h.level == 30
+        assert type(h1a) == type(h1b) == type(h2a) == type(h2b) == logging.StreamHandler
 
-        h = [x for x in handlers if type(x) == logging.FileHandler].pop()
-        assert h.level == 50
+    def test_setup_handlers_config_boolean(self, log_handler_util):
+        handlers_t = log_handler_util.setup_handlers(True)
+        handlers_f = log_handler_util.setup_handlers(False)
+
+        assert len(handlers_t) == len(handlers_f) == 1
+
+        h_t, h_f = handlers_t.pop(), handlers_f.pop()
+
+        assert isinstance(h_t, logging.StreamHandler) and h_t.level == 10
+        assert isinstance(h_f, logging.StreamHandler) and h_f.level == 30
 
 
 @pytest.mark.usefixtures('reset_logger')
 class TestRemoveHandler:
-    def test_remove_handler(self, log_handler_util, tmpdir):
-        logger = logging.getLogger(__name__)
+    def test_remove_handler(self, log_handler_util):
+        logger, handler = logging.getLogger(__name__), logging.StreamHandler()
+        log_handler_util.add_handler(logger, handler)
 
-        h = logging.FileHandler(filename=tmpdir.join('temp_file'))
-        log_handler_util.add_handler(logger, h)
         assert len(logger.handlers) == 1
-        assert getattr(h, 'stream', None)
 
-        log_handler_util.remove_handler(logger, h)
+        log_handler_util.remove_handler(logger, handler)
+
         assert len(logger.handlers) == 0
-        assert getattr(h, 'stream', None) is None
