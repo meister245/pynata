@@ -1,5 +1,7 @@
-__version__ = '0.4.0'
+__version__ = '0.4.1'
 
-from .logger.logger import LoggerUtil
+from .logger import log_util
 
-log_util = LoggerUtil()
+
+def setup_logger(logger_name, logger_level=None, handler_config=None, **kwargs):
+    return log_util.setup_logger(logger_name, logger_level=logger_level, handler_config=handler_config, **kwargs)

@@ -131,7 +131,7 @@ class TestLogging:
         logger.debug('test debug level')
         logger.warning('test warning level')
 
-        assert [x.levelname for x in caplog.records] == ['DEBUG', 'WARNING']
+        assert [x.levelname for x in caplog.records] == ['WARNING']
 
     def test_logging_handler_log_level_higher(self, log_util, caplog):
         logger = log_util.setup_logger(__name__, logger_level=10, handler_config={'stream': {'log_level': 30}})

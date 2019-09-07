@@ -21,7 +21,7 @@ class LoggerUtil(LoggerCommon):
     handler = LoggerHandlerUtil()
 
     def setup_logger(self, logger_name: str, logger_level: Union[str, int, bool] = None,
-                     handler_config: Union[dict, bool, None] = None, **kwargs) -> logging.Logger:
+                     handler_config: Union[dict, bool] = None, **kwargs) -> logging.Logger:
         """
         Return a configured logging.Logger instance with logging handlers
 
