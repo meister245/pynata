@@ -1,9 +1,11 @@
 .pytest_cache/
+.cache/
 .idea/
 
 *.egg-info/
 build/
 dist/
+venv/
 
 *.pyc
 *.iml
