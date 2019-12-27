@@ -16,18 +16,17 @@ Install latest stable build
 pip install -U pynata
 ```
 
-Install latest development build from Gitlab
+Install latest development build from GitHub
 ```
-pip install git+https://gitlab.com/meister245/pynata.git@development
+pip install git+https://github.com/meister245/pynata.git@development
 ```
 
 ### Wiki
 
-* Changelog: https://gitlab.com/meister245/pynata/wikis/Changelog
+* Changelog: https://github.com/meister245/pynata/wiki/Changelog
 
 ### Bug report
 
 Found an issue with the library? Use one of the methods below for reporting
 
-* Issue tracking: https://gitlab.com/meister245/pynata/issues
-* Email: [incoming+meister245/pynata@incoming.gitlab.com](mailto:incoming+meister245/pynata@incoming.gitlab.com)
+* Issue tracking: https://github.com/meister245/pynata/issues

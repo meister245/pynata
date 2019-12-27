@@ -10,20 +10,18 @@ with open('pynata/__init__.py', 'r') as f:
     version = re.search(r'(?<=__version__\s=\s\')(?:\d+\.\d+\.\d+)', f.read()).group(0)
 
 project_urls = {
-    'Changelog': 'https://gitlab.com/meister245/pynata/wikis/Changelog',
-    'Issue tracker': 'https://gitlab.com/meister245/pynata/issues'
+    'Changelog': 'https://github.com/meister245/pynata/wiki/Changelog',
+    'Issue tracker': 'https://github.com/meister245/pynata/issues'
 }
 
 setup(
     name='pynata',
     version=version,
-    url='https://gitlab.com/meister245/pynata',
+    url='https://github.com/meister245/pynata',
     license='MPL2.0',
     author='Zsolt Mester',
     author_email='contact@zsoltmester.com',
-    maintainer='Project Service Desk',
-    maintainer_email='incoming+meister245/pynata@incoming.gitlab.com',
-    description='Python utility library',
+    description='python utility library',
     long_description=long_description,
     long_description_content_type='text/markdown',
     project_urls=project_urls,
